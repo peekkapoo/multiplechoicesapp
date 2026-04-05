@@ -6,7 +6,8 @@
 
 - Thi trắc nghiệm theo section.
 - Chọn số lượng câu hỏi muốn làm.
-- Đồng hồ đếm ngược theo số câu.
+- Chọn thời gian làm bài: theo số câu, nhập phút tùy chỉnh, hoặc không giới hạn.
+- Đồng hồ đếm ngược theo thời gian đã chọn.
 - Chấm điểm tự động sau khi nộp bài.
 - Xem kho câu hỏi (archive) và tìm kiếm nhanh.
 - Import/Export bộ đề qua file Excel.

@@ -64,26 +64,30 @@ const CopyrightFooter = () => (
   </footer>
 );
 
-const Toggle = ({ enabled, setEnabled, label }) => (
-  <button
-    type="button"
-    className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
-    onClick={() => setEnabled((prev) => !prev)}
-    role="switch"
-    aria-checked={enabled}
-    aria-label={label}
-  >
-    <div className="flex items-center gap-3 text-slate-200">
-      <div className={`p-2 rounded-xl ${enabled ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-800 text-slate-400'} transition-colors`}>
-        <Shuffle size={20} />
+const Toggle = ({ enabled, setEnabled, label, icon }) => {
+  const ToggleIcon = icon ?? Shuffle;
+
+  return (
+    <button
+      type="button"
+      className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
+      onClick={() => setEnabled((prev) => !prev)}
+      role="switch"
+      aria-checked={enabled}
+      aria-label={label}
+    >
+      <div className="flex items-center gap-3 text-slate-200">
+        <div className={`p-2 rounded-xl ${enabled ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-800 text-slate-400'} transition-colors`}>
+          <ToggleIcon size={20} />
+        </div>
+        <span className="font-medium text-sm md:text-base">{label}</span>
       </div>
-      <span className="font-medium text-sm md:text-base">{label}</span>
-    </div>
-    <div className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-blue-500' : 'bg-slate-700'}`}>
-      <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${enabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
-    </div>
-  </button>
-);
+      <div className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-blue-500' : 'bg-slate-700'}`}>
+        <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${enabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
+      </div>
+    </button>
+  );
+};
 
 export default function App() {
   const [appState, setAppState] = useState('setup'); // 'setup', 'quiz', 'result', 'archive'
@@ -124,12 +128,16 @@ export default function App() {
   const [selectedSections, setSelectedSections] = useState(availableSections);
   const [questionCountInput, setQuestionCountInput] = useState(''); // Để trống = chọn tất cả
   const [isShuffleQs, setIsShuffleQs] = useState(false);
+  const [timeLimitInput, setTimeLimitInput] = useState(''); // Để trống = mặc định 1 phút/câu
+  const [isUnlimitedTime, setIsUnlimitedTime] = useState(false);
 
   // Active Quiz State
   const [activeQuizData, setActiveQuizData] = useState([]);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [userAnswers, setUserAnswers] = useState({}); 
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [quizTimeLimitSeconds, setQuizTimeLimitSeconds] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   
   // Archive State
   const [archiveSearch, setArchiveSearch] = useState('');
@@ -235,6 +243,18 @@ export default function App() {
     });
   };
 
+  const setUnlimitedTimeEnabled = (updater) => {
+    setIsUnlimitedTime((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+
+      if (next) {
+        setTimeLimitInput('');
+      }
+
+      return next;
+    });
+  };
+
   const maxQuestionCount = quizData.filter(
     (q) => selectedSections.includes(q.section || 'Uncategorized')
   ).length;
@@ -275,10 +295,26 @@ export default function App() {
       return;
     }
 
+    const customMinutes = Number.parseInt(timeLimitInput, 10);
+    let selectedTimeLimitSeconds = processedData.length * 60;
+
+    if (isUnlimitedTime) {
+      selectedTimeLimitSeconds = null;
+    } else if (timeLimitInput.trim() !== '') {
+      if (Number.isNaN(customMinutes) || customMinutes <= 0) {
+        alert('Thời gian làm bài phải là số phút lớn hơn 0.');
+        return;
+      }
+
+      selectedTimeLimitSeconds = customMinutes * 60;
+    }
+
     setActiveQuizData(processedData);
     setCurrentQuestionIdx(0);
     setUserAnswers({});
-    setTimeRemaining(processedData.length * 60);
+    setElapsedSeconds(0);
+    setQuizTimeLimitSeconds(selectedTimeLimitSeconds);
+    setTimeRemaining(selectedTimeLimitSeconds ?? 0);
     setAppState('quiz');
   };
 
@@ -286,7 +322,15 @@ export default function App() {
     if (appState !== 'quiz') return;
 
     const timer = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1);
+
+      if (quizTimeLimitSeconds === null) {
+        return;
+      }
+
       setTimeRemaining((prev) => {
+        if (typeof prev !== 'number') return 0;
+
         if (prev <= 1) {
           clearInterval(timer);
           setAppState('result');
@@ -298,7 +342,7 @@ export default function App() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [appState]);
+  }, [appState, quizTimeLimitSeconds]);
 
   const finishQuiz = () => setAppState('result');
 
@@ -441,10 +485,41 @@ export default function App() {
 
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wider">
+                <Clock size={16} /> Exam Time
+              </label>
+              <div className="space-y-3">
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={timeLimitInput}
+                  onChange={(e) => setTimeLimitInput(e.target.value)}
+                  placeholder="Nhập số phút (để trống = 1 phút/câu)"
+                  disabled={isUnlimitedTime}
+                  className="w-full py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white/10 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <Toggle
+                  enabled={isUnlimitedTime}
+                  setEnabled={setUnlimitedTimeEnabled}
+                  label="Không giới hạn thời gian"
+                  icon={Clock}
+                />
+                <p className="text-xs text-slate-500">
+                  {isUnlimitedTime
+                    ? 'Chế độ hiện tại: Không giới hạn thời gian.'
+                    : timeLimitInput.trim() !== ''
+                      ? `Chế độ hiện tại: ${timeLimitInput} phút làm bài.`
+                      : 'Chế độ hiện tại: 1 phút cho mỗi câu hỏi.'}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wider">
                 <Shuffle size={16} /> Randomize Elements
               </label>
               <div className="space-y-3">
-                <Toggle enabled={isShuffleQs} setEnabled={setIsShuffleQs} label="Shuffle Question Order" />
+                <Toggle enabled={isShuffleQs} setEnabled={setIsShuffleQs} label="Shuffle Question Order" icon={Shuffle} />
               </div>
             </div>
           </div>
@@ -492,6 +567,7 @@ export default function App() {
           <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4 w-full sm:w-auto">
               <button 
+                type="button"
                 onClick={() => setAppState('setup')}
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/10 shrink-0"
               >
@@ -588,6 +664,11 @@ export default function App() {
   // APP STATE: RESULT
   if (appState === 'result') {
     const scorePercentage = activeQuizData.length > 0 ? Math.round((correctCount / activeQuizData.length) * 100) : 0;
+    const timeUsedLabel =
+      quizTimeLimitSeconds === null
+        ? `${formatTime(elapsedSeconds)} (No limit)`
+        : formatTime(elapsedSeconds);
+
     return (
       <div className="min-h-screen font-sans text-slate-100 relative flex flex-col">
         <AnimatedBackground />
@@ -605,11 +686,12 @@ export default function App() {
               </div>
               <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
                 <p className="text-sm text-slate-400 mb-1">Time Used</p>
-                <p className="text-xl font-bold text-blue-400">{formatTime((activeQuizData.length * 60) - timeRemaining)}</p>
+                <p className="text-xl font-bold text-blue-400">{timeUsedLabel}</p>
               </div>
             </div>
 
             <button 
+              type="button"
               onClick={() => setAppState('setup')}
               className="w-full py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
             >
@@ -676,6 +758,7 @@ export default function App() {
         <header className="bg-white/5 backdrop-blur-md border-b border-white/10 px-4 md:px-6 py-3 flex justify-between items-center shrink-0 z-10">
           <div className="flex items-center gap-4">
             <button 
+              type="button"
               onClick={() => {
                 if(window.confirm('Bạn có chắc chắn muốn thoát? Kết quả hiện tại sẽ bị hủy.')) setAppState('setup');
               }}
@@ -692,7 +775,7 @@ export default function App() {
           </div>
           <div className="flex items-center gap-3 bg-slate-800/50 text-blue-400 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner font-mono text-base">
             <Clock size={18} />
-            {formatTime(timeRemaining)}
+            {quizTimeLimitSeconds === null ? `No limit · ${formatTime(elapsedSeconds)}` : formatTime(timeRemaining)}
           </div>
         </header>
 
@@ -753,6 +836,7 @@ export default function App() {
             
             <div className="mt-10 pb-12 flex justify-between items-center pl-0 md:pl-14">
               <button 
+                type="button"
                 onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
                 disabled={currentQuestionIdx === 0}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10"
@@ -761,6 +845,7 @@ export default function App() {
               </button>
 
               <button 
+                type="button"
                 onClick={() => setCurrentQuestionIdx(prev => prev + 1)}
                 disabled={currentQuestionIdx === activeQuizData.length - 1}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
