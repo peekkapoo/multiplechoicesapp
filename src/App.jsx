@@ -62,24 +62,6 @@ const BrandMark = ({
   </div>
 );
 
-const BrandLockup = ({ isDarkTheme, className = '' }) => (
-  <div className={`inline-flex flex-col items-center gap-3 ${className}`.trim()}>
-    <BrandMark
-      className="h-20 w-20 md:h-24 md:w-24 shadow-[0_14px_30px_rgba(14,165,233,0.30)]"
-      iconSize={34}
-      strokeWidth={2.6}
-      ariaLabel="BLUE app logo"
-    />
-    <span
-      className={`text-[1.7rem] md:text-[2rem] font-semibold leading-none tracking-[0.42em] pl-[0.42em] ${
-        isDarkTheme ? 'text-[#24D4FF]' : 'text-[#149DE5]'
-      }`}
-    >
-      BLUE
-    </span>
-  </div>
-);
-
 const AnimatedBackground = ({ isDarkTheme }) => (
   <div
     className="fixed inset-0 z-[-1] overflow-hidden transition-colors duration-500"
@@ -653,7 +635,12 @@ export default function App() {
           <div className={`max-w-2xl w-full rounded-[2rem] p-6 md:p-8 relative ${glassCardClass}`}>
           <div className="text-center mb-7">
             <div className="mx-auto mb-5 w-fit transform -rotate-1 hover:rotate-0 transition-transform">
-              <BrandLockup isDarkTheme={isDarkTheme} />
+              <BrandMark
+                className="h-20 w-20 md:h-24 md:w-24 shadow-[0_14px_30px_rgba(14,165,233,0.30)]"
+                iconSize={34}
+                strokeWidth={2.6}
+                ariaLabel="BLUE app logo"
+              />
             </div>
             <h1 className={`text-2xl md:text-3xl font-bold bg-clip-text text-transparent ${isDarkTheme ? 'bg-gradient-to-r from-white to-sky-200' : 'bg-gradient-to-r from-[#0B1F3A] to-[#0EA5E9]'}`}>
               Exam Setup
