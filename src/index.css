@@ -12,10 +12,17 @@ body,
 	min-height: 100%;
 }
 
+html {
+	font-size: clamp(14px, 0.32vw + 13px, 16px);
+	text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+
 body {
 	margin: 0;
 	background: #020617;
 	color: #e2e8f0;
+	line-height: 1.45;
 }
 
 /* Utility class used in the app to hide scrollbars on supported browsers. */

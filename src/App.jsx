@@ -323,22 +323,22 @@ export default function App() {
 
   if (appState === 'setup') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 font-sans text-slate-100 relative overflow-y-auto py-10">
+      <div className="min-h-screen flex items-center justify-center p-4 font-sans text-slate-100 relative overflow-y-auto py-8 md:py-10">
         <AnimatedBackground />
         
-        <div className="max-w-2xl w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-8 md:p-10 border border-white/20 relative">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg transform -rotate-6 hover:rotate-0 transition-transform">
-              <Settings2 size={32} className="text-white" />
+        <div className="max-w-2xl w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 border border-white/20 relative">
+          <div className="text-center mb-7">
+            <div className="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg transform -rotate-6 hover:rotate-0 transition-transform">
+              <Settings2 size={28} className="text-white" />
             </div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
+            <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
               Exam Setup
             </h1>
-            <p className="text-blue-200/70 mt-2 text-sm">Customize your testing experience or review the archive</p>
+            <p className="text-blue-200/70 mt-2 text-xs md:text-sm">Customize your testing experience or review the archive</p>
           </div>
 
           {/* --- EXCEL DATA MANAGER --- */}
-          <div className="mb-8 p-5 rounded-2xl bg-slate-900/40 border border-indigo-500/30">
+          <div className="mb-7 p-4 md:p-5 rounded-2xl bg-slate-900/40 border border-indigo-500/30">
             <div className="flex items-center justify-between mb-4">
               <label className="flex items-center gap-2 text-sm font-bold text-indigo-300 uppercase tracking-wider">
                 <FileSpreadsheet size={18} /> Quản lý Bộ Đề (Excel)
@@ -364,7 +364,7 @@ export default function App() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={!isExcelReady}
-                className="flex-1 py-3 bg-white/5 hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-200 border border-white/10 hover:border-indigo-500/30 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-1 py-2.5 bg-white/5 hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-200 border border-white/10 hover:border-indigo-500/30 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Upload size={16} /> Import Excel (.xlsx)
               </button>
@@ -372,7 +372,7 @@ export default function App() {
                 type="button"
                 onClick={handleExportExcel}
                 disabled={!isExcelReady}
-                className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Download size={16} /> Export File Mẫu
               </button>
@@ -384,11 +384,11 @@ export default function App() {
             </p>
           </div>
 
-          <div className="mb-8">
+          <div className="mb-7">
             <button 
               type="button"
               onClick={() => setAppState('archive')}
-              className="w-full p-4 rounded-2xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/30 transition-all flex items-center justify-center gap-3 text-indigo-200 font-semibold"
+              className="w-full p-3 rounded-2xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/30 transition-all flex items-center justify-center gap-3 text-indigo-200 font-semibold"
             >
               <BookOpen size={20} />
               View Full Archive ({quizData.length} Questions)
@@ -454,7 +454,7 @@ export default function App() {
             type="button"
             onClick={startQuiz}
             disabled={maxQuestionCount === 0}
-            className="w-full mt-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-blue-500 hover:to-indigo-400 text-white rounded-2xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+            className="w-full mt-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-blue-500 hover:to-indigo-400 text-white rounded-2xl font-bold text-base md:text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
           >
             Start Exam 
             <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -498,7 +498,7 @@ export default function App() {
                 <ChevronLeft size={20} />
               </button>
               <div>
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
                   <BookOpen size={20} className="text-blue-400" /> Question Archive
                 </h2>
                 <p className="text-xs text-slate-400">Total: {quizData.length} questions loaded</p>
@@ -537,7 +537,7 @@ export default function App() {
               </div>
             ) : (
               archiveData.map((q) => (
-                <div key={`${q.id}-${q.section}-${q.text.slice(0, 24)}`} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors">
+                <div key={`${q.id}-${q.section}-${q.text.slice(0, 24)}`} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-colors">
                   <div className="flex gap-4">
                     <div className="w-10 h-10 shrink-0 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center font-bold text-blue-300">
                       Q{q.id}
@@ -546,7 +546,7 @@ export default function App() {
                       <span className="text-xs font-semibold px-2 py-1 bg-white/10 rounded text-slate-300 mb-3 inline-block">
                         {q.section || "Uncategorized"}
                       </span>
-                      <h3 className="text-lg text-white font-medium mb-4 leading-relaxed">{q.text}</h3>
+                      <h3 className="text-base md:text-lg text-white font-medium mb-4 leading-relaxed">{q.text}</h3>
                       
                       <div className="space-y-2 mb-4">
                         {Object.keys(q.options).map(optKey => (
@@ -591,26 +591,26 @@ export default function App() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 font-sans text-slate-100 relative">
         <AnimatedBackground />
-        <div className="max-w-md w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-8 text-center border border-white/20">
-          <div className="w-28 h-28 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
-            <span className="text-4xl font-bold text-white">{scorePercentage}%</span>
+        <div className="max-w-md w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 text-center border border-white/20">
+          <div className="w-24 h-24 rounded-full mx-auto mb-5 flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+            <span className="text-3xl font-bold text-white">{scorePercentage}%</span>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Exam Completed</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Exam Completed</h2>
           
           <div className="grid grid-cols-2 gap-4 mb-8 mt-6">
             <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
               <p className="text-sm text-slate-400 mb-1">Correct Answers</p>
-              <p className="text-2xl font-bold text-green-400">{correctCount} <span className="text-lg text-slate-500">/ {activeQuizData.length}</span></p>
+              <p className="text-xl font-bold text-green-400">{correctCount} <span className="text-base text-slate-500">/ {activeQuizData.length}</span></p>
             </div>
             <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
               <p className="text-sm text-slate-400 mb-1">Time Used</p>
-              <p className="text-2xl font-bold text-blue-400">{formatTime((activeQuizData.length * 60) - timeRemaining)}</p>
+              <p className="text-xl font-bold text-blue-400">{formatTime((activeQuizData.length * 60) - timeRemaining)}</p>
             </div>
           </div>
 
           <button 
             onClick={() => setAppState('setup')}
-            className="w-full py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
           >
             <RotateCcw size={18} /> Back to Setup
           </button>
@@ -652,7 +652,7 @@ export default function App() {
   };
 
   const getGridBtnClass = (idx) => {
-    let base = "w-10 h-10 rounded-xl flex items-center justify-center font-medium text-sm transition-all border ";
+    let base = "w-9 h-9 rounded-xl flex items-center justify-center font-medium text-xs md:text-sm transition-all border ";
     if (idx === currentQuestionIdx) base += "ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-900 scale-110 ";
     
     if (!userAnswers[idx]) {
@@ -668,7 +668,7 @@ export default function App() {
       <AnimatedBackground />
 
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <header className="bg-white/5 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center shrink-0 z-10">
+        <header className="bg-white/5 backdrop-blur-md border-b border-white/10 px-4 md:px-6 py-3 flex justify-between items-center shrink-0 z-10">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => {
@@ -679,32 +679,32 @@ export default function App() {
               <RotateCcw size={18} />
             </button>
             <div>
-              <h2 className="font-bold text-lg text-white hidden sm:block tracking-wide">EXAM ROOM</h2>
+              <h2 className="font-bold text-base md:text-lg text-white hidden sm:block tracking-wide">EXAM ROOM</h2>
               <p className="text-xs font-medium text-blue-300 bg-blue-500/20 px-2 py-1 rounded-md inline-block mt-1">
                 {currentQuestion.section || "Uncategorized"}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-slate-800/50 text-blue-400 px-4 py-2 rounded-xl border border-white/10 shadow-inner font-mono text-lg">
+          <div className="flex items-center gap-3 bg-slate-800/50 text-blue-400 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner font-mono text-base">
             <Clock size={18} />
             {formatTime(timeRemaining)}
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth scrollbar-hide z-10">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth scrollbar-hide z-10">
           <div className="max-w-4xl mx-auto pb-10">
-            <div className="mb-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-xl">
+            <div className="mb-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 md:p-6 shadow-xl">
               <div className="flex items-start gap-5">
-                <div className="shrink-0 flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-lg shadow-[0_0_15px_rgba(59,130,246,0.4)]">
+                <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-base shadow-[0_0_15px_rgba(59,130,246,0.4)]">
                   {currentQuestionIdx + 1}
                 </div>
-                <h3 className="text-xl md:text-2xl leading-relaxed text-white font-medium mt-1">
+                <h3 className="text-lg md:text-xl leading-relaxed text-white font-medium mt-1">
                   {currentQuestion.text}
                 </h3>
               </div>
             </div>
 
-            <div className="space-y-4 pl-0 md:pl-16">
+            <div className="space-y-3 pl-0 md:pl-14">
               {currentQuestion.displayOptions?.map((opt, index) => {
                 const label = LABELS[index]; 
                 return (
@@ -714,13 +714,13 @@ export default function App() {
                     onClick={() => handleSelectAnswer(opt.originalKey)}
                     disabled={hasAnsweredCurrent}
                     aria-label={`Chọn đáp án ${label}`}
-                    className={`w-full text-left relative p-5 rounded-2xl border transition-all duration-300 flex items-start gap-5 backdrop-blur-sm group disabled:pointer-events-none ${getOptionGlassClass(opt.originalKey)}`}
+                    className={`w-full text-left relative p-4 rounded-2xl border transition-all duration-300 flex items-start gap-4 backdrop-blur-sm group disabled:pointer-events-none ${getOptionGlassClass(opt.originalKey)}`}
                   >
                     <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 text-white font-bold text-sm border border-white/10 group-hover:scale-105 transition-transform">
                       {label}
                     </div>
                     <div className="mt-1 flex-1">
-                      <p className="leading-relaxed text-base">{opt.text}</p>
+                      <p className="leading-relaxed text-sm md:text-base">{opt.text}</p>
                     </div>
                     
                     {hasAnsweredCurrent && opt.originalKey === currentQuestion.correctAnswer && (
@@ -734,8 +734,8 @@ export default function App() {
               })}
             </div>
 
-            <div className={`transition-all duration-700 ease-out overflow-hidden mt-8 pl-0 md:pl-16 ${hasAnsweredCurrent ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-              <div className="bg-indigo-900/40 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-6 shadow-inner relative overflow-hidden">
+            <div className={`transition-all duration-700 ease-out overflow-hidden mt-8 pl-0 md:pl-14 ${hasAnsweredCurrent ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="bg-indigo-900/40 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-5 shadow-inner relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-400 to-indigo-500"></div>
                 <h4 className="font-bold text-indigo-300 flex items-center gap-2 mb-3">
                   <AlertCircle size={18} /> Detailed Explanation
@@ -746,11 +746,11 @@ export default function App() {
               </div>
             </div>
             
-            <div className="mt-12 pb-12 flex justify-between items-center pl-0 md:pl-16">
+            <div className="mt-10 pb-12 flex justify-between items-center pl-0 md:pl-14">
               <button 
                 onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
                 disabled={currentQuestionIdx === 0}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10"
               >
                 <ChevronLeft size={18} /> Previous
               </button>
@@ -758,7 +758,7 @@ export default function App() {
               <button 
                 onClick={() => setCurrentQuestionIdx(prev => prev + 1)}
                 disabled={currentQuestionIdx === activeQuizData.length - 1}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
               >
                 Next <ChevronRight size={18} />
               </button>
@@ -767,8 +767,8 @@ export default function App() {
         </div>
       </div>
 
-      <div className="w-full md:w-80 bg-slate-900/60 backdrop-blur-2xl border-l border-white/10 flex flex-col shrink-0 h-64 md:h-screen z-20">
-        <div className="p-6 border-b border-white/10">
+      <div className="w-full md:w-72 bg-slate-900/60 backdrop-blur-2xl border-l border-white/10 flex flex-col shrink-0 h-64 md:h-screen z-20">
+        <div className="p-5 border-b border-white/10">
           <h3 className="font-bold text-white tracking-wide">Progress Panel</h3>
           <div className="flex gap-4 mt-4 text-xs font-medium text-slate-400">
             <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]"></span> Correct</div>
@@ -780,7 +780,7 @@ export default function App() {
           </p>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-hide pb-20">
+        <div className="flex-1 overflow-y-auto p-5 scrollbar-hide pb-20">
           <div className="grid grid-cols-6 md:grid-cols-5 lg:grid-cols-5 gap-3">
             {activeQuizData.map((q, idx) => (
               <button
@@ -795,7 +795,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="p-6 border-t border-white/10 shrink-0 bg-slate-900/40">
+        <div className="p-5 border-t border-white/10 shrink-0 bg-slate-900/40">
           <button 
             type="button"
             onClick={() => {
@@ -811,7 +811,7 @@ export default function App() {
 
               finishQuiz();
             }}
-            className="w-full py-4 bg-white hover:bg-slate-200 text-slate-900 rounded-2xl font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] flex justify-center items-center gap-2"
+            className="w-full py-3 bg-white hover:bg-slate-200 text-slate-900 rounded-2xl text-sm font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] flex justify-center items-center gap-2"
           >
             Submit Exam <CheckCircle2 size={18} />
           </button>
