@@ -3,7 +3,6 @@ import {
   Clock, CheckCircle2, XCircle, ChevronRight, ChevronLeft, 
   AlertCircle, RotateCcw, Settings2, Shuffle, 
   Layers, Check, BookOpen, Search, Hash, Upload, Download, FileSpreadsheet,
-  Copyright
 } from 'lucide-react';
 
 // --- DEFAULT DATA MOCK ---
@@ -58,12 +57,11 @@ const AnimatedBackground = () => (
 );
 
 const CopyrightFooter = () => (
-  <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
-    <Copyright size={14} className="text-white drop-shadow-md" />
-    <p className="text-white text-xs font-medium tracking-widest drop-shadow-md">
-      by peekk_apoo
+  <footer className="w-full px-4 pb-4 pt-2 flex justify-center">
+    <p className="whitespace-nowrap rounded-full border border-white/20 bg-slate-900/60 px-3 py-1.5 text-[11px] md:text-xs font-medium tracking-[0.08em] text-slate-200 backdrop-blur-md">
+      © 2026 by peekk_apoo. All rights reserved
     </p>
-  </div>
+  </footer>
 );
 
 const Toggle = ({ enabled, setEnabled, label }) => (
@@ -323,10 +321,11 @@ export default function App() {
 
   if (appState === 'setup') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 font-sans text-slate-100 relative overflow-y-auto py-8 md:py-10">
+      <div className="min-h-screen font-sans text-slate-100 relative flex flex-col">
         <AnimatedBackground />
-        
-        <div className="max-w-2xl w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 border border-white/20 relative">
+
+        <div className="flex-1 flex items-center justify-center p-4 py-8 md:py-10">
+          <div className="max-w-2xl w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 border border-white/20 relative">
           <div className="text-center mb-7">
             <div className="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg transform -rotate-6 hover:rotate-0 transition-transform">
               <Settings2 size={28} className="text-white" />
@@ -459,6 +458,7 @@ export default function App() {
             Start Exam 
             <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
           </button>
+          </div>
         </div>
         <CopyrightFooter />
       </div>
@@ -528,7 +528,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+        <div className="flex-1 p-4 sm:p-8">
           <div className="max-w-5xl mx-auto space-y-6">
             {archiveData.length === 0 ? (
               <div className="text-center py-20 text-slate-400 bg-white/5 rounded-2xl border border-white/10">
@@ -589,31 +589,33 @@ export default function App() {
   if (appState === 'result') {
     const scorePercentage = activeQuizData.length > 0 ? Math.round((correctCount / activeQuizData.length) * 100) : 0;
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 font-sans text-slate-100 relative">
+      <div className="min-h-screen font-sans text-slate-100 relative flex flex-col">
         <AnimatedBackground />
-        <div className="max-w-md w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 text-center border border-white/20">
-          <div className="w-24 h-24 rounded-full mx-auto mb-5 flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
-            <span className="text-3xl font-bold text-white">{scorePercentage}%</span>
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Exam Completed</h2>
-          
-          <div className="grid grid-cols-2 gap-4 mb-8 mt-6">
-            <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-              <p className="text-sm text-slate-400 mb-1">Correct Answers</p>
-              <p className="text-xl font-bold text-green-400">{correctCount} <span className="text-base text-slate-500">/ {activeQuizData.length}</span></p>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 text-center border border-white/20">
+            <div className="w-24 h-24 rounded-full mx-auto mb-5 flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+              <span className="text-3xl font-bold text-white">{scorePercentage}%</span>
             </div>
-            <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-              <p className="text-sm text-slate-400 mb-1">Time Used</p>
-              <p className="text-xl font-bold text-blue-400">{formatTime((activeQuizData.length * 60) - timeRemaining)}</p>
+            <h2 className="text-2xl font-bold text-white mb-2">Exam Completed</h2>
+            
+            <div className="grid grid-cols-2 gap-4 mb-8 mt-6">
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <p className="text-sm text-slate-400 mb-1">Correct Answers</p>
+                <p className="text-xl font-bold text-green-400">{correctCount} <span className="text-base text-slate-500">/ {activeQuizData.length}</span></p>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <p className="text-sm text-slate-400 mb-1">Time Used</p>
+                <p className="text-xl font-bold text-blue-400">{formatTime((activeQuizData.length * 60) - timeRemaining)}</p>
+              </div>
             </div>
-          </div>
 
-          <button 
-            onClick={() => setAppState('setup')}
-            className="w-full py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
-          >
-            <RotateCcw size={18} /> Back to Setup
-          </button>
+            <button 
+              onClick={() => setAppState('setup')}
+              className="w-full py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
+            >
+              <RotateCcw size={18} /> Back to Setup
+            </button>
+          </div>
         </div>
         <CopyrightFooter />
       </div>
@@ -625,10 +627,12 @@ export default function App() {
   // An toàn: nếu filter/dữ liệu rỗng, ngăn UI sập
   if (!currentQuestion) {
      return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white flex-col gap-4 relative">
-          <AlertCircle size={48} className="text-red-400" />
-          <p>Lỗi không tải được câu hỏi. Xin thử tải lại trang hoặc kiểm tra file Excel.</p>
-          <button type="button" onClick={() => setAppState('setup')} className="bg-blue-600 px-4 py-2 rounded-lg">Về màn hình thiết lập</button>
+        <div className="min-h-screen bg-slate-900 text-white flex flex-col relative">
+          <div className="flex-1 flex items-center justify-center flex-col gap-4 p-4 text-center">
+            <AlertCircle size={48} className="text-red-400" />
+            <p>Lỗi không tải được câu hỏi. Xin thử tải lại trang hoặc kiểm tra file Excel.</p>
+            <button type="button" onClick={() => setAppState('setup')} className="bg-blue-600 px-4 py-2 rounded-lg">Về màn hình thiết lập</button>
+          </div>
           <CopyrightFooter />
         </div>
      );
@@ -664,10 +668,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen font-sans flex flex-col md:flex-row relative">
+    <div className="min-h-screen font-sans relative flex flex-col">
       <AnimatedBackground />
 
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <div className="flex-1 min-h-0 flex flex-col md:flex-row">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
         <header className="bg-white/5 backdrop-blur-md border-b border-white/10 px-4 md:px-6 py-3 flex justify-between items-center shrink-0 z-10">
           <div className="flex items-center gap-4">
             <button 
@@ -767,7 +772,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="w-full md:w-72 bg-slate-900/60 backdrop-blur-2xl border-l border-white/10 flex flex-col shrink-0 h-64 md:h-screen z-20">
+      <div className="w-full md:w-72 bg-slate-900/60 backdrop-blur-2xl border-l border-white/10 flex flex-col shrink-0 h-64 md:h-auto z-20">
         <div className="p-5 border-b border-white/10">
           <h3 className="font-bold text-white tracking-wide">Progress Panel</h3>
           <div className="flex gap-4 mt-4 text-xs font-medium text-slate-400">
@@ -817,7 +822,8 @@ export default function App() {
           </button>
         </div>
       </div>
-      
+
+      </div>
       <CopyrightFooter />
     </div>
   );
