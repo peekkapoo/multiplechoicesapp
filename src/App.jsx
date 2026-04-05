@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Clock, CheckCircle2, XCircle, ChevronRight, ChevronLeft, 
-  AlertCircle, RotateCcw, Settings2, Shuffle, 
-  Layers, Check, BookOpen, Search, Hash, Upload, Download, FileSpreadsheet, Moon, Sun,
+  AlertCircle, RotateCcw, Shuffle, 
+  Layers, Check, BookOpen, Search, Hash, Upload, Download, FileSpreadsheet, Moon, Sun, Zap,
 } from 'lucide-react';
 
 // --- DEFAULT DATA MOCK ---
@@ -46,6 +46,39 @@ const shuffleArray = (array) => {
 };
 
 const LABELS = ['A', 'B', 'C', 'D'];
+
+const BrandMark = ({
+  className = '',
+  iconSize = 14,
+  strokeWidth = 2.7,
+  ariaLabel = 'BLUE logo',
+}) => (
+  <div
+    role="img"
+    aria-label={ariaLabel}
+    className={`flex items-center justify-center rounded-[28%] bg-gradient-to-br from-sky-400 to-blue-700 ${className}`.trim()}
+  >
+    <Zap size={iconSize} className="text-white" strokeWidth={strokeWidth} />
+  </div>
+);
+
+const BrandLockup = ({ isDarkTheme, className = '' }) => (
+  <div className={`inline-flex flex-col items-center gap-3 ${className}`.trim()}>
+    <BrandMark
+      className="h-20 w-20 md:h-24 md:w-24 shadow-[0_14px_30px_rgba(14,165,233,0.30)]"
+      iconSize={34}
+      strokeWidth={2.6}
+      ariaLabel="BLUE app logo"
+    />
+    <span
+      className={`text-[1.7rem] md:text-[2rem] font-semibold leading-none tracking-[0.42em] pl-[0.42em] ${
+        isDarkTheme ? 'text-[#24D4FF]' : 'text-[#149DE5]'
+      }`}
+    >
+      BLUE
+    </span>
+  </div>
+);
 
 const AnimatedBackground = ({ isDarkTheme }) => (
   <div
@@ -619,8 +652,8 @@ export default function App() {
         <div className="flex-1 flex items-center justify-center p-4 py-8 md:py-10">
           <div className={`max-w-2xl w-full rounded-[2rem] p-6 md:p-8 relative ${glassCardClass}`}>
           <div className="text-center mb-7">
-            <div className="w-14 h-14 bg-gradient-to-tr from-[#0EA5E9] to-[#0D2F62] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg transform -rotate-6 hover:rotate-0 transition-transform">
-              <Settings2 size={28} className="text-white" />
+            <div className="mx-auto mb-5 w-fit transform -rotate-1 hover:rotate-0 transition-transform">
+              <BrandLockup isDarkTheme={isDarkTheme} />
             </div>
             <h1 className={`text-2xl md:text-3xl font-bold bg-clip-text text-transparent ${isDarkTheme ? 'bg-gradient-to-r from-white to-sky-200' : 'bg-gradient-to-r from-[#0B1F3A] to-[#0EA5E9]'}`}>
               Exam Setup
@@ -809,7 +842,7 @@ export default function App() {
                 </button>
                 <div>
                   <h2 className={`text-lg md:text-xl font-bold flex items-center gap-2 ${isDarkTheme ? 'text-white' : 'text-[#0B1F3A]'}`}>
-                    <BookOpen size={20} className={isDarkTheme ? 'text-sky-400' : 'text-sky-600'} /> Question Archive
+                    <BrandMark className="h-6 w-6 shrink-0 shadow-[0_6px_14px_rgba(14,165,233,0.32)]" /> Question Archive
                   </h2>
                   <p className={`text-xs ${mutedTextClass}`}>Total: {quizData.length} questions loaded</p>
                 </div>
@@ -1156,7 +1189,10 @@ export default function App() {
               <RotateCcw size={18} />
             </button>
             <div>
-              <h2 className={`font-bold text-base md:text-lg hidden sm:block tracking-wide ${isDarkTheme ? 'text-white' : 'text-[#0B1F3A]'}`}>EXAM ROOM</h2>
+              <div className="hidden sm:flex items-center gap-2">
+                <BrandMark className="h-6 w-6 shrink-0 shadow-[0_6px_14px_rgba(14,165,233,0.32)]" />
+                <h2 className={`font-bold text-base md:text-lg tracking-wide ${isDarkTheme ? 'text-white' : 'text-[#0B1F3A]'}`}>EXAM ROOM</h2>
+              </div>
               <p className={`text-xs font-medium px-2 py-1 rounded-md inline-block mt-1 ${isDarkTheme ? 'text-sky-300 bg-sky-500/20' : 'text-sky-700 bg-sky-100'}`}>
                 {currentQuestion.section || "Uncategorized"}
               </p>
