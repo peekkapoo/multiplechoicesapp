@@ -1,4 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
 :root {
+	--auth-ink: #0B1F3A;
+	--auth-sky: #0EA5E9;
+	--auth-cyan: #22D3EE;
+	--auth-navy: #07162A;
+	--auth-navy-2: #0D2F62;
+	--app-bg: #f3f8ff;
+	--app-text: #0B1F3A;
+	--app-selection: rgba(14, 165, 233, 0.24);
+	color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+	--app-bg: #040A14;
+	--app-text: #e2e8f0;
+	--app-selection: rgba(34, 211, 238, 0.3);
 	color-scheme: dark;
 }
 
@@ -20,9 +37,17 @@ html {
 
 body {
 	margin: 0;
-	background: #020617;
-	color: #e2e8f0;
-	line-height: 1.45;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	background: var(--app-bg);
+	color: var(--app-text);
+	line-height: 1.55;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	transition: background-color 260ms ease, color 260ms ease;
+}
+
+::selection {
+	background: var(--app-selection);
 }
 
 /* Utility class used in the app to hide scrollbars on supported browsers. */
