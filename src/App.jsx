@@ -146,58 +146,114 @@ export default function App() {
 
   const fileInputRef = useRef(null);
 
-  // --- EXCEL DATA MANAGEMENT FUNCTIONS ---
+  // --- EXCEL/CSV DATA MANAGEMENT FUNCTIONS ---
   const handleImportExcel = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
+    const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
+    const isCsvFile = fileExtension === 'csv';
+    const supportedExtensions = ['xlsx', 'xls', 'csv'];
+
+    if (!supportedExtensions.includes(fileExtension)) {
+      alert('❌ Định dạng file chưa được hỗ trợ. Vui lòng chọn .xlsx, .xls hoặc .csv.');
+      event.target.value = '';
+      return;
+    }
+
     if (!window.XLSX) {
-      alert("Thư viện xử lý Excel đang tải. Vui lòng đợi 1 lát và thử lại.");
+      alert("Thư viện xử lý file đang tải. Vui lòng đợi 1 lát và thử lại.");
+      event.target.value = '';
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = window.XLSX.read(data, { type: 'array' });
+        let workbook;
+
+        if (isCsvFile) {
+          const csvText = String(e.target?.result || '').replace(/^\uFEFF/, '');
+          const firstLine = csvText.split(/\r?\n/, 1)[0] || '';
+          const commaCount = (firstLine.match(/,/g) || []).length;
+          const semicolonCount = (firstLine.match(/;/g) || []).length;
+          const delimiter = semicolonCount > commaCount ? ';' : ',';
+
+          workbook = window.XLSX.read(csvText, {
+            type: 'string',
+            raw: true,
+            FS: delimiter
+          });
+        } else {
+          const data = new Uint8Array(e.target.result);
+          workbook = window.XLSX.read(data, { type: 'array' });
+        }
+
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        const json = window.XLSX.utils.sheet_to_json(worksheet);
+        const json = window.XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
-        // Map các cột từ Excel sang Object của App
+        const normalizeRowKeys = (row) => {
+          return Object.entries(row).reduce((acc, [key, value]) => {
+            const normalizedKey = String(key).replace(/^\uFEFF/, '').trim().toLowerCase();
+            acc[normalizedKey] = value;
+            return acc;
+          }, {});
+        };
+
+        const getRowValue = (row, aliases) => {
+          for (const alias of aliases) {
+            const value = row[alias];
+            if (value !== undefined && value !== null && String(value).trim() !== '') {
+              return value;
+            }
+          }
+          return '';
+        };
+
+        // Map các cột từ Excel/CSV sang Object của App
         const importedData = json.map((row, index) => {
+          const normalizedRow = normalizeRowKeys(row);
+
           return {
-            id: row['No.'] || index + 1,
-            section: row['Section'] || "Uncategorized",
-            text: row['Question'] || "",
+            id: getRowValue(normalizedRow, ['no.', 'no', 'id']) || index + 1,
+            section: getRowValue(normalizedRow, ['section']) || "Uncategorized",
+            text: getRowValue(normalizedRow, ['question']) || "",
             options: {
-              A: String(row['Option A'] || ""),
-              B: String(row['Option B'] || ""),
-              C: String(row['Option C'] || ""),
-              D: String(row['Option D'] || "")
+              A: String(getRowValue(normalizedRow, ['option a', 'a'])),
+              B: String(getRowValue(normalizedRow, ['option b', 'b'])),
+              C: String(getRowValue(normalizedRow, ['option c', 'c'])),
+              D: String(getRowValue(normalizedRow, ['option d', 'd']))
             },
-            correctAnswer: String(row['Correct Answer'] || "").toUpperCase().trim(),
-            explanation: String(row['Explanation'] || "")
+            correctAnswer: String(getRowValue(normalizedRow, ['correct answer', 'answer'])).toUpperCase().trim(),
+            explanation: String(getRowValue(normalizedRow, ['explanation']))
           };
         }).filter(q => q.text && q.text.trim() !== ""); // Lọc các dòng câu hỏi trống
+
+        const fileTypeLabel = isCsvFile ? 'CSV' : 'Excel';
 
         if (importedData.length > 0) {
           setQuizData(importedData);
           setSelectedSections([...new Set(importedData.map((q) => q.section || 'Uncategorized'))]);
           localStorage.setItem('examData', JSON.stringify(importedData));
           
-          alert(`✅ Import thành công ${importedData.length} câu hỏi từ file Excel!`);
+          alert(`✅ Import thành công ${importedData.length} câu hỏi từ file ${fileTypeLabel}!`);
         } else {
           alert("❌ File không có dữ liệu câu hỏi hợp lệ. Hãy kiểm tra lại các cột theo file mẫu.");
         }
       } catch (err) {
         console.error(err);
-        alert("❌ Lỗi: Không thể phân tích file. Vui lòng đảm bảo đây là file Excel (.xlsx) hợp lệ.");
+        alert("❌ Lỗi: Không thể phân tích file. Vui lòng đảm bảo đây là file Excel (.xlsx, .xls) hoặc CSV (.csv) hợp lệ.");
       }
     };
-    // Sử dụng ArrayBuffer để đọc chính xác file nhị phân của Excel
-    reader.readAsArrayBuffer(file);
+
+    if (isCsvFile) {
+      reader.readAsText(file, 'utf-8');
+    } else {
+      // Sử dụng ArrayBuffer để đọc chính xác file nhị phân của Excel
+      reader.readAsArrayBuffer(file);
+    }
+
     event.target.value = ''; // Reset input
   };
 
@@ -385,14 +441,14 @@ export default function App() {
           <div className="mb-7 p-4 md:p-5 rounded-2xl bg-slate-900/40 border border-indigo-500/30">
             <div className="flex items-center justify-between mb-4">
               <label className="flex items-center gap-2 text-sm font-bold text-indigo-300 uppercase tracking-wider">
-                <FileSpreadsheet size={18} /> Quản lý Bộ Đề (Excel)
+                <FileSpreadsheet size={18} /> Quản lý Bộ Đề (Excel/CSV)
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono bg-indigo-500/20 text-indigo-200 px-3 py-1 rounded-full border border-indigo-500/30">
                   {quizData.length} Questions
                 </span>
                 <span className={`text-[10px] px-2 py-1 rounded-full border ${isExcelReady ? 'text-emerald-200 bg-emerald-500/20 border-emerald-500/30' : 'text-amber-200 bg-amber-500/20 border-amber-500/30'}`}>
-                  {isExcelReady ? 'Excel ready' : 'Loading Excel...'}
+                  {isExcelReady ? 'Parser ready' : 'Loading parser...'}
                 </span>
               </div>
             </div>
@@ -410,7 +466,7 @@ export default function App() {
                 disabled={!isExcelReady}
                 className="flex-1 py-2.5 bg-white/5 hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-200 border border-white/10 hover:border-indigo-500/30 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <Upload size={16} /> Import Excel (.xlsx)
+                <Upload size={16} /> Import File (.xlsx, .xls, .csv)
               </button>
               <button 
                 type="button"
@@ -423,8 +479,8 @@ export default function App() {
             </div>
             <p className="text-xs text-slate-500 mt-3 text-center">
               {isExcelReady
-                ? 'Tải file mẫu về, điền câu hỏi rồi import lại lên đây.'
-                : 'Đang tải thư viện Excel, vui lòng đợi vài giây trước khi import/export.'}
+                ? 'Tải file mẫu về, điền câu hỏi rồi import lại lên đây. Hỗ trợ .xlsx, .xls và .csv.'
+                : 'Đang tải thư viện xử lý file, vui lòng đợi vài giây trước khi import/export.'}
             </p>
           </div>
 
