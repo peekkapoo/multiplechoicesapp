@@ -669,34 +669,154 @@ export default function App() {
         ? `${formatTime(elapsedSeconds)} (No limit)`
         : formatTime(elapsedSeconds);
 
+    const reviewedAnswers = activeQuizData
+      .map((question, idx) => {
+        const selectedAnswer = userAnswers[idx] ?? null;
+        const isCorrect = selectedAnswer === question.correctAnswer;
+
+        return {
+          idx,
+          question,
+          selectedAnswer,
+          isCorrect,
+        };
+      })
+      .sort((a, b) => {
+        if (a.isCorrect === b.isCorrect) {
+          return a.idx - b.idx;
+        }
+
+        return a.isCorrect ? 1 : -1;
+      });
+
+    const wrongCount = reviewedAnswers.filter((item) => !item.isCorrect).length;
+
     return (
       <div className="min-h-screen font-sans text-slate-100 relative flex flex-col">
         <AnimatedBackground />
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 text-center border border-white/20">
-            <div className="w-24 h-24 rounded-full mx-auto mb-5 flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
-              <span className="text-3xl font-bold text-white">{scorePercentage}%</span>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Exam Completed</h2>
-            
-            <div className="grid grid-cols-2 gap-4 mb-8 mt-6">
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                <p className="text-sm text-slate-400 mb-1">Correct Answers</p>
-                <p className="text-xl font-bold text-green-400">{correctCount} <span className="text-base text-slate-500">/ {activeQuizData.length}</span></p>
+        <div className="flex-1 p-4 md:p-6">
+          <div className="max-w-5xl mx-auto space-y-6">
+            <div className="bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-6 md:p-8 border border-white/20">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div className="flex items-center gap-5">
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+                    <span className="text-2xl md:text-3xl font-bold text-white">{scorePercentage}%</span>
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-1">Exam Completed</h2>
+                    <p className="text-sm text-slate-300">Review answers below (wrong answers are shown first).</p>
+                  </div>
+                </div>
+
+                <button 
+                  type="button"
+                  onClick={() => setAppState('setup')}
+                  className="w-full md:w-auto py-3 px-6 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
+                >
+                  <RotateCcw size={18} /> Back to Setup
+                </button>
               </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                <p className="text-sm text-slate-400 mb-1">Time Used</p>
-                <p className="text-xl font-bold text-blue-400">{timeUsedLabel}</p>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                  <p className="text-sm text-slate-400 mb-1">Correct</p>
+                  <p className="text-xl font-bold text-green-400">{correctCount}</p>
+                </div>
+                <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                  <p className="text-sm text-slate-400 mb-1">Wrong</p>
+                  <p className="text-xl font-bold text-red-400">{wrongCount}</p>
+                </div>
+                <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                  <p className="text-sm text-slate-400 mb-1">Total</p>
+                  <p className="text-xl font-bold text-blue-300">{activeQuizData.length}</p>
+                </div>
+                <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                  <p className="text-sm text-slate-400 mb-1">Time Used</p>
+                  <p className="text-xl font-bold text-blue-400">{timeUsedLabel}</p>
+                </div>
               </div>
             </div>
 
-            <button 
-              type="button"
-              onClick={() => setAppState('setup')}
-              className="w-full py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"
-            >
-              <RotateCcw size={18} /> Back to Setup
-            </button>
+            <div className="bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-5 md:p-6 border border-white/20">
+              <h3 className="text-lg font-bold text-white mb-4">Answer Review</h3>
+              <div className="space-y-4">
+                {reviewedAnswers.map((item) => (
+                  <div
+                    key={`${item.question.id}-${item.idx}`}
+                    className={`rounded-2xl border p-4 md:p-5 ${
+                      item.isCorrect
+                        ? 'bg-emerald-500/10 border-emerald-500/30'
+                        : 'bg-rose-500/10 border-rose-500/30'
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 text-sm font-bold text-white">
+                          {item.idx + 1}
+                        </span>
+                        <span className="text-xs px-2 py-1 rounded bg-white/10 text-slate-300">
+                          {item.question.section || 'Uncategorized'}
+                        </span>
+                      </div>
+                      <span
+                        className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
+                          item.isCorrect
+                            ? 'text-emerald-200 border-emerald-500/40 bg-emerald-500/20'
+                            : 'text-rose-200 border-rose-500/40 bg-rose-500/20'
+                        }`}
+                      >
+                        {item.isCorrect ? 'Correct' : 'Wrong'}
+                      </span>
+                    </div>
+
+                    <h4 className="text-base md:text-lg font-medium text-white leading-relaxed mb-4">
+                      {item.question.text}
+                    </h4>
+
+                    <div className="space-y-2 mb-4">
+                      {Object.entries(item.question.options || {}).map(([optKey, optText]) => {
+                        const isCorrectOption = optKey === item.question.correctAnswer;
+                        const isSelectedWrong = item.selectedAnswer === optKey && !item.isCorrect;
+
+                        return (
+                          <div
+                            key={optKey}
+                            className={`p-3 rounded-lg border text-sm flex gap-3 ${
+                              isCorrectOption
+                                ? 'bg-green-500/20 border-green-500/40 text-green-100'
+                                : isSelectedWrong
+                                  ? 'bg-red-500/20 border-red-500/40 text-red-100'
+                                  : 'bg-slate-800/40 border-white/10 text-slate-300'
+                            }`}
+                          >
+                            <span className="font-bold shrink-0">{optKey}.</span>
+                            <span>{String(optText)}</span>
+                            {isCorrectOption && <CheckCircle2 size={18} className="text-green-400 ml-auto shrink-0" />}
+                            {isSelectedWrong && <XCircle size={18} className="text-red-400 ml-auto shrink-0" />}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="text-sm mb-3">
+                      <span className="text-slate-400">Your answer: </span>
+                      <span className="font-semibold text-slate-100">
+                        {item.selectedAnswer || 'Not answered'}
+                      </span>
+                      <span className="text-slate-400"> | Correct answer: </span>
+                      <span className="font-semibold text-emerald-300">{item.question.correctAnswer}</span>
+                    </div>
+
+                    <div className="bg-indigo-900/30 border border-indigo-500/20 rounded-lg p-4 text-sm text-indigo-200">
+                      <strong className="flex items-center gap-2 mb-1 text-indigo-300">
+                        <AlertCircle size={16} /> Explanation
+                      </strong>
+                      {item.question.explanation?.trim() || 'Không có giải thích cho câu hỏi này.'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
         <CopyrightFooter />
