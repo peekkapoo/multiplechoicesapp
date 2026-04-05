@@ -142,6 +142,7 @@ export default function App() {
   // Archive State
   const [archiveSearch, setArchiveSearch] = useState('');
   const [archiveSectionFilter, setArchiveSectionFilter] = useState('ALL');
+  const [archiveSortOrder, setArchiveSortOrder] = useState('A_Z');
 
   const fileInputRef = useRef(null);
 
@@ -544,20 +545,42 @@ export default function App() {
   if (appState === 'archive') {
     const searchKeyword = archiveSearch.trim().toLowerCase();
 
-    const archiveData = quizData.filter((q) => {
-      const matchesSection = archiveSectionFilter === 'ALL' || (q.section || 'Uncategorized') === archiveSectionFilter;
-      const optionText = Object.values(q.options || {}).join(' ').toLowerCase();
-      const explanationText = (q.explanation || '').toLowerCase();
+    const archiveData = quizData
+      .filter((q) => {
+        const matchesSection = archiveSectionFilter === 'ALL' || (q.section || 'Uncategorized') === archiveSectionFilter;
+        const optionText = Object.values(q.options || {}).join(' ').toLowerCase();
+        const explanationText = (q.explanation || '').toLowerCase();
 
-      const matchesSearch =
-        searchKeyword === '' ||
-        q.text.toLowerCase().includes(searchKeyword) ||
-        explanationText.includes(searchKeyword) ||
-        optionText.includes(searchKeyword) ||
-        String(q.id).includes(searchKeyword);
+        const matchesSearch =
+          searchKeyword === '' ||
+          q.text.toLowerCase().includes(searchKeyword) ||
+          explanationText.includes(searchKeyword) ||
+          optionText.includes(searchKeyword) ||
+          String(q.id).includes(searchKeyword);
 
-      return matchesSection && matchesSearch;
-    });
+        return matchesSection && matchesSearch;
+      })
+      .sort((a, b) => {
+        const textA = (a.text || '').toLowerCase();
+        const textB = (b.text || '').toLowerCase();
+        const compare = textA.localeCompare(textB, undefined, {
+          sensitivity: 'base',
+          numeric: true,
+        });
+
+        const idA = Number(a.id) || 0;
+        const idB = Number(b.id) || 0;
+
+        if (archiveSortOrder === 'QUESTION_ASC') {
+          return idA - idB;
+        }
+
+        if (archiveSortOrder === 'QUESTION_DESC') {
+          return idB - idA;
+        }
+
+        return archiveSortOrder === 'Z_A' ? -compare : compare;
+      });
 
     return (
       <div className="min-h-screen font-sans flex flex-col relative text-slate-100">
@@ -599,6 +622,16 @@ export default function App() {
               >
                 <option value="ALL">All Sections</option>
                 {availableSections.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <select
+                value={archiveSortOrder}
+                onChange={(e) => setArchiveSortOrder(e.target.value)}
+                className="bg-slate-800/50 border border-white/10 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-blue-500 shrink-0"
+              >
+                <option value="A_Z">A → Z</option>
+                <option value="Z_A">Z → A</option>
+                <option value="QUESTION_ASC">Q 1 → 99</option>
+                <option value="QUESTION_DESC">Q 99 → 1</option>
               </select>
             </div>
           </div>
